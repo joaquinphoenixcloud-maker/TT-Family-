@@ -3,7 +3,7 @@ import { Client, Account, Databases, Storage, ID, Query } from 'appwrite';
 
 // === သင်၏ Appwrite ID များကို ဒီနေရာတွင် အစားထိုးပါ ===
 const PROJECT_ID = 'YOUR_APPWRITE_PROJECT_ID'; // <---- ဒီနေရာမှာ အစားထိုးပါ
-const DATABASE_ID = 'YOUR_DATABASE_ID';      // <---- ဒီနေရာမှာ အစားထိုးပါ
+const DATABASE_ID = '692a5880002409d389cb';      // <---- ဒီနေရာမှာ အစားထိုးပါ
 const COLLECTION_ID = 'YOUR_COLLECTION_ID';  // <---- ဒီနေရာမှာ အစားထိုးပါ (t_family_ ရဲ့ ID)
 const BUCKET_ID = 'YOUR_BUCKET_ID';          // <---- ဒီနေရာမှာ အစားထိုးပါ
 
