@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - TT Family</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="appwrite.js"></script>
+    <style>
+        /* Login CSS (style.css ထဲမှာ ထည့်ရန်) */
+        .login-container { max-width: 400px; margin: 100px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .login-container input { width: 100%; padding: 10px; margin-bottom: 10px; }
+        .login-container button { background-color: #f7a800; color: black; padding: 10px; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">ဝင်မည်</button>
+            <p id="error-message" style="color: red; margin-top: 10px;"></p>
+        </form>
+    </div>
+
+    <script type="module">
+        import { loginUser, checkAuth } from './appwrite.js';
+
+        // အကယ်၍ User က Login ဝင်ထားပြီးသားဆိုရင် Dashboard ကို တန်းပို့ပါ
+        window.onload = async () => {
+            const user = await checkAuth();
+            if (user) {
+                window.location.href = '/dashboard.html';
+            }
+        };
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = ''; // Error ကို ရှင်းလင်းပါ
+
+            try {
+                // koko/thae အတွက် Appwrite မှာ email: koko@example.com လို Account တစ်ခု ဖန်တီးထားရပါမယ်
+                await loginUser(email, password);
+            } catch (error) {
+                errorMessage.textContent = error.message;
+            }
+        });
+    </script>
+</body>
+</html>
