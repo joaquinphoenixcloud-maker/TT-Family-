@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - TT Family</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="appwrite.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">American Campers</div>
+        <nav class="nav">
+            <a href="#" id="logout-btn">Logout</a>
+        </nav>
+    </header>
+
+    <section class="gallery-section">
+        <h2>ကျွန်ုပ်၏ ဓါတ်ပုံနှင့် ဗီဒီယိုများ</h2>
+        <div class="media-container" id="media-container">
+            </div>
+    </section>
+
+    <script type="module">
+        import { checkAuth, logoutUser, getMediaItems, getFilePreview } from './appwrite.js';
+
+        // စာမျက်နှာ တင်တာနဲ့ Authentication စစ်ဆေးပြီး Content တွေကို ဆွဲထုတ်ပါ
+        window.onload = async () => {
+            const user = await checkAuth();
+            if (!user) {
+                // Login မဝင်ထားရင် Login Page ကို ပို့ပါ
+                window.location.href = '/index.html'; 
+                return;
+            }
+
+            // Logout ခလုတ် Function
+            document.getElementById('logout-btn').addEventListener('click', logoutUser);
+
+            // Content များကို Appwrite မှ ဆွဲထုတ်ပါ
+            const items = await getMediaItems();
+            renderMedia(items);
+        };
+
+        function renderMedia(items) {
+            const container = document.getElementById('media-container');
+            container.innerHTML = ''; // အဟောင်းတွေကို ရှင်းလင်းပါ
+
+            items.forEach(item => {
+                const mediaElement = document.createElement('div');
+                mediaElement.classList.add('media-item');
+
+                // Appwrite Storage ကနေ Link ကို ဆွဲထုတ်
+                const fileUrl = getFilePreview(item.mediaId);
+
+                let contentHtml = '';
+                if (item.mediaType === 'image') {
+                    contentHtml = `<img src="${fileUrl}" alt="${item.caption}">`;
+                } else if (item.mediaType === 'video') {
+                    contentHtml = `<video controls src="${fileUrl}"></video>`;
+                }
+
+                mediaElement.innerHTML = `
+                    ${contentHtml}
+                    <p class="caption">${item.caption}</p>
+                `;
+                container.appendChild(mediaElement);
+            });
+        }
+    </script>
+</body>
+</html>
