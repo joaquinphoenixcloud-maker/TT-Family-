@@ -1,15 +1,18 @@
 // appwrite.js
 import { Client, Account, Databases, Storage, ID, Query } from 'appwrite';
 
-// === သင်၏ Appwrite ID များကို ဒီနေရာတွင် အစားထိုးပါ ===
-const PROJECT_ID = 'YOUR_APPWRITE_PROJECT_ID'; // <---- ဒီနေရာမှာ အစားထိုးပါ
-const DATABASE_ID = '692a5880002409d389cb';      // <---- ဒီနေရာမှာ အစားထိုးပါ
-const COLLECTION_ID = 'YOUR_COLLECTION_ID';  // <---- ဒီနေရာမှာ အစားထိုးပါ (t_family_ ရဲ့ ID)
-const BUCKET_ID = 'YOUR_BUCKET_ID';          // <---- ဒီနေရာမှာ အစားထိုးပါ
+// =================================================================================
+// === သင့်ရဲ့ Appwrite ID များကို အတိအကျ ဖြည့်သွင်းပြီးသား ဖြစ်သည် ===
+// =================================================================================
+const PROJECT_ID = '692a504e001aab41aabd';      
+const DATABASE_ID = '632ac8f69902499d38cb';      
+const COLLECTION_ID = '692a643a0011a48237cd';  
+const BUCKET_ID = '692a6530000db49b8618';      
 
 const client = new Client();
 client
-    .setEndpoint('https://cloud.appwrite.io/v1') // Cloud Appwrite ကို သုံးပါက ဒီအတိုင်းထားပါ
+    // သင်ပေးပို့သော Endpoint URL (Singapre server) ကို သတ်မှတ်ထားသည်
+    .setEndpoint('https://sgp.cloud.appwrite.io/v1') 
     .setProject(PROJECT_ID);
 
 const account = new Account(client);
@@ -17,19 +20,24 @@ const databases = new Databases(client);
 const storage = new Storage(client);
 
 // =========================================================================
-// ၁။ Login ဝင်ရောက်ခြင်း
+// ၁။ Login ဝင်ရောက်ခြင်း Function
+// =========================================================================
 export async function loginUser(email, password) {
     try {
+        // Appwrite မှာ Email Session တစ်ခု စတင်ပါ
         await account.createEmailSession(email, password);
         // Login အောင်မြင်ပါက Dashboard စာမျက်နှာသို့ ပို့ပါ
         window.location.href = '/dashboard.html';
     } catch (error) {
         console.error("Login Failed:", error);
-        throw new Error("Login ဝင်ရောက်မှု မအောင်မြင်ပါ။");
+        // Login ပုံစံမှာ Error Message ပြသရန်
+        throw new Error("Username (သို့မဟုတ်) Password မှားနေပါသည်။");
     }
 }
 
-// ၂။ Logout ထွက်ခွာခြင်း
+// =========================================================================
+// ၂။ Logout ထွက်ခွာခြင်း Function
+// =========================================================================
 export async function logoutUser() {
     try {
         await account.deleteSession('current');
@@ -39,13 +47,15 @@ export async function logoutUser() {
     }
 }
 
-// ၃။ ပုံ/ဗီဒီယို Content များကို ဆွဲထုတ်ခြင်း
+// =========================================================================
+// ၃။ ပုံ/ဗီဒီယို Content များကို ဆွဲထုတ်ခြင်း Function
+// =========================================================================
 export async function getMediaItems() {
     try {
         const response = await databases.listDocuments(
             DATABASE_ID,
             COLLECTION_ID,
-            [Query.orderDesc('dateAdded')] // dateAdded ကို အသစ်ဆုံးကနေ စီရန်
+            [Query.orderDesc('dateAdded')] // dateAdded ကော်လံနဲ့ အသစ်ဆုံးကို အရင် စီပါ
         );
         return response.documents;
     } catch (error) {
@@ -54,18 +64,23 @@ export async function getMediaItems() {
     }
 }
 
-// ၄။ File Link ကို ရယူခြင်း
+// =========================================================================
+// ၄။ File Link ကို ရယူခြင်း Function
+// =========================================================================
 export function getFilePreview(fileId) {
     // ဓါတ်ပုံ/ဗီဒီယို ကြည့်ရှုနိုင်ဖို့ Public Link ကို ရယူခြင်း
     return storage.getFilePreview(BUCKET_ID, fileId);
 }
 
-// ၅။ လက်ရှိ User ကို စစ်ဆေးခြင်း
+// =========================================================================
+// ၅။ လက်ရှိ User ကို စစ်ဆေးခြင်း Function
+// =========================================================================
 export async function checkAuth() {
     try {
         const user = await account.get();
         return user;
     } catch (error) {
+        // Login မဝင်ထားရင် Error တက်ပြီး null ပြန်လာပါမယ်
         return null;
     }
 }
